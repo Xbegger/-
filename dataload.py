@@ -8,7 +8,6 @@ import torch.utils.data.dataloader as dataloader
 import numpy as np
 import matplotlib.pyplot as plt
 
-root_dir = '../FS2K'
 
 json_files = {
     'train': '../FS2K/anno_train.json',
@@ -55,7 +54,7 @@ class MyDataSet(torch.utils.data.Dataset):
             dir = "train"
         else:
             dir = "test"
-        root_dir_spliltType = os.path.join(root_dir, dir)
+        root_dir_spliltType = os.path.join(self.root_dir, dir)
 
         with open(self.json_file, 'r') as f:
             json_data = json.loads(f.read())
