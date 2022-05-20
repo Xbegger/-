@@ -1,5 +1,4 @@
-from cProfile import label
-import cv2
+from PIL import Image
 import json
 import os
 import torch
@@ -16,7 +15,7 @@ json_files = {
 
 # 数据预处理
 train_transform = transforms.Compose([
-    transforms.ToPILImage(), # 转换数据格式为tensforms格式，才能进行后续处理
+    # transforms.ToPILImage(), # 转换数据格式为tensforms格式，才能进行后续处理
     transforms.Resize(256),# 按照比例把图像最小的一个边长放缩到256，另一边按照相同比例放缩。
     # transforms.RandomResizedCrop(224,scale=(0.5,1.0)),
     # transforms.RandomHorizontalFlip(),# 把图像按照中心随机切割成224正方形大小的图片
@@ -38,7 +37,7 @@ class MyDataSet(torch.utils.data.Dataset):
 
 
     def image_load(self, photo_path):
-        img = cv2.imread(photo_path)
+        img = Image.open(photo_path)
         return self.transform(img)
 
     def __init__(self, json_file, train, transform, sketch):
