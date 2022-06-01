@@ -1,3 +1,4 @@
+from tkinter.tix import Tree
 from PIL import Image
 import json
 import os
@@ -16,12 +17,12 @@ json_files = {
 # 数据预处理
 train_transform = transforms.Compose([
     # transforms.ToPILImage(), # 转换数据格式为tensforms格式，才能进行后续处理
-    transforms.Resize(256),# 按照比例把图像最小的一个边长放缩到256，另一边按照相同比例放缩。
+    transforms.Resize(128),# 按照比例把图像最小的一个边长放缩到256，另一边按照相同比例放缩。
     # transforms.RandomResizedCrop(224,scale=(0.5,1.0)),
     # transforms.RandomHorizontalFlip(),# 把图像按照中心随机切割成224正方形大小的图片
-    transforms.CenterCrop((256, 256)),
+    transforms.CenterCrop((128, 128)),
     transforms.ToTensor(),# 转换为tensor格式，这个格式可以直接输入进神经网络
-    #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])# 对像素值进行归一化处理
+    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])# 对像素值进行归一化处理
 ])
 
 def add_suffix(file_path):
@@ -91,7 +92,7 @@ class MyDataSet(torch.utils.data.Dataset):
 
             # 输出
             labels = [skin_color, lip_color, eye_color, hair, hair_color, \
-                    hair, hair_color, gender, earring, smile, frontal_face, style]
+                      gender, earring, smile, frontal_face, style]
             dataSet.append(data)
             labelSet.append(labels)
         return dataSet, labelSet
@@ -103,15 +104,11 @@ class MyDataSet(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.dataSet)
 
+batch_size = 64
+
+
 trainset = MyDataSet(json_files['train'], train=True, transform=train_transform, sketch=False)
+trainloader = dataloader.DataLoader(trainset, batch_size=batch_size, shuffle=True)
 
-trainloader = dataloader.DataLoader(trainset, batch_size=4, shuffle=True)
-
-dataiter = iter(trainloader)
-
-images, labels = dataiter.next()
-npimage = images[0].numpy()
-
-
-plt.imshow(np.transpose(npimage, (1, 2, 0)))
-plt.show()
+testset = MyDataSet(json_files['test'], train=False, transform=train_transform, sketch=False)
+testloader = dataloader.DataLoader(testset, batch_size=batch_size, shuffle=True)
